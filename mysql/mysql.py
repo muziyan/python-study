@@ -1,14 +1,14 @@
 import pymysql as sql
+import pandas as pd
 
 # localhost = ip 地址
 # root = 连接用户名
 # "" = 连接密码
 # python = 数据库名称
-db = sql.connect("localhost", "root", "", "python")
+db = sql.connect("localhost", "root", "", "python",charset="utf8")
 
 # create a cursor 游标对象 相当于php的pdo
 cursor = db.cursor()
-
 
 # 插入假数据
 '''
@@ -57,3 +57,45 @@ result = cursor.execute(sql)
 db.commit()
 print("删除成功" if result else "删除失败")
 '''
+
+'''
+sql = "select count(*) from test"
+cursor.execute(sql)
+count = cursor.fetchone()
+'''
+
+
+# 将获取的数据转换成DataFrame类型
+sql = "select * from test"
+cursor.execute(sql)
+# 获取数据库列表信息
+col = cursor.description
+print(col)
+# 获取全部查询信息
+result = cursor.fetchall()
+# 获取的信息默认为tuple类型，讲columns转换成DataFrame类型
+# list(tuple) 是将tuple =》 list
+columns = pd.DataFrame(list(col))
+# 将数据转换成DataFrame类型，并匹配columns
+df = pd.DataFrame(list(result),columns=columns[0])
+
+
+# 检测变量类型function
+def typeof(variate):
+    type = None
+    if isinstance(variate, int):
+        type = "int"
+    elif isinstance(variate, str):
+        type = "str"
+    elif isinstance(variate, float):
+        type = "float"
+    elif isinstance(variate, list):
+        type = "list"
+    elif isinstance(variate, tuple):
+        type = "tuple"
+    elif isinstance(variate, dict):
+        type = "dict"
+    elif isinstance(variate, set):
+        type = "set"
+    return type
+
