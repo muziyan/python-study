@@ -1,14 +1,17 @@
-import pymysql as sql
+import pymysql
 import pandas as pd
+import json
 
 # localhost = ip 地址
 # root = 连接用户名
 # "" = 连接密码
 # python = 数据库名称
-db = sql.connect("localhost", "root", "", "python",charset="utf8")
+db = pymysql.connect("localhost", "root", "", "python",charset="utf8")
 
 # create a cursor 游标对象 相当于php的pdo
-cursor = db.cursor()
+# cursor = db.cursor()
+# 指定返回数据类型
+cursor = db.cursor(cursor=pymysql.cursors.DictCursor)
 
 # 插入假数据
 '''
@@ -29,7 +32,16 @@ for sql in sql_list:
 sql = "select * from test"
 cursor.execute(sql)
 results = cursor.fetchall()
-print(results)
+# 将从数据库里面获取的数据储存在test.json里面
+with open("test.json",'w') as f:
+    f.write("[")
+    i = 0
+    for val in results:
+        i = i + 1
+        f.write(json.dumps(val,indent=2,ensure_ascii=False))
+        if i != len(results):
+            f.write(",\n")
+    f.write("]")
 '''
 
 # 查询单个数据
@@ -64,7 +76,7 @@ cursor.execute(sql)
 count = cursor.fetchone()
 '''
 
-
+'''
 # 将获取的数据转换成DataFrame类型
 sql = "select * from test"
 cursor.execute(sql)
@@ -78,7 +90,7 @@ result = cursor.fetchall()
 columns = pd.DataFrame(list(col))
 # 将数据转换成DataFrame类型，并匹配columns
 df = pd.DataFrame(list(result),columns=columns[0])
-
+'''
 
 # 检测变量类型function
 def typeof(variate):

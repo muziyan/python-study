@@ -41,3 +41,23 @@
     columns = pd.DataFrame(list(col))
     # 将数据转换成DataFrame类型，并匹配columns
     df = pd.DataFrame(list(result),columns=columns[0])
+
+### 查询数据返回为字典(DictCursor)  
+需要在穿件cursor实例时候给参数就可以指定返回数据类型  
+`cursor = db.cursor(cursor=pymysql.cursors.DictCursor)`
+将数据库查询的数据储存为json文本
+```
+sql = "select * from test"
+cursor.execute(sql)
+results = cursor.fetchall()
+# 将从数据库里面获取的数据储存在test.json里面
+with open("test.json",'w') as f:
+    f.write("[")
+    i = 0
+    for val in results:
+        i = i + 1
+        f.write(json.dumps(val,indent=2,ensure_ascii=False))
+        if i != len(results):
+            f.write(",\n")
+    f.write("]")
+```
